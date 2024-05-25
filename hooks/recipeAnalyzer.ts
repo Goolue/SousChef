@@ -2,18 +2,12 @@ import { OpenAI } from 'openai';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages';
 import { measureDuration } from './utils/durationUtils';
 
+const model = 'gpt-4o'
+const assistantId = process.env.EXPO_PUBLIC_ASSISTANT_ID?.trim();
+const apiKey = process.env.EXPO_PUBLIC_OPENAI_KEY;
+
 // TODO remove dangerouslyAllowBrowser
-const client = new OpenAI({apiKey: `${process.env.OPENAI_KEY}`, dangerouslyAllowBrowser: true})
-const assistantId = process.env.ASSISTANT_ID;
-
-export async function initThread(): Promise<string> {
-    return measureDuration('initThread', async () => {
-        const thread = await client.beta.threads.create();
-
-        console.log(`created thread: ${thread.id}`)
-        return thread.id;
-    });
-}
+const client = new OpenAI({apiKey: apiKey, dangerouslyAllowBrowser: true})
 
 export async function cleanPageContent(pageContent: string): Promise<string> {
     return measureDuration('cleanHtml', async () => {
@@ -26,7 +20,7 @@ export async function cleanPageContent(pageContent: string): Promise<string> {
         console.log('cleaning page content')
         const response = await client.chat.completions.create({
             stream: false,
-            model: 'gpt-4o',
+            model,
             n: 1,
             temperature: 1,
             messages: [
@@ -37,30 +31,26 @@ export async function cleanPageContent(pageContent: string): Promise<string> {
 
         const clean = response.choices[0].message.content as string;
 
-        console.log(`original page content: ${pageContent}`);
         console.log(`cleaned page content: ${clean}`);
         return clean;
     });
 }
 
-export async function initAssistant(recipe: string, threadId: string): Promise<string> {
-    return measureDuration('initAssistant', async () => {
+export async function initThread(recipe: string): Promise<string> {
+    return measureDuration('initThread', async () => {
 
-        console.log('sending recipe message')
-        await client.beta.threads.messages.create(
-            threadId,
-            {
-                role: "user",
-                content: `This is my receipt: ${recipe}. When you're done reading it just reply "OK"`
-            }
-        );
+        console.log('creating thread')
+        const thread = await client.beta.threads.create({
+            messages: [
+                {
+                    role: 'user',
+                    content: `This is my receipt: ${recipe}. Analyze it for me.`
+                }
+            ]
+        });
 
-        console.log('running assistant')
-        let run = await client.beta.threads.runs.createAndPoll(
-            threadId, { assistant_id: assistantId }
-        );
-
-        return await waitForRun(run);
+        console.log(`created thread: ${thread.id}`)
+        return thread.id;
     });
 }
 

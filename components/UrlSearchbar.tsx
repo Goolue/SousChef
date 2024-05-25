@@ -1,11 +1,11 @@
 import getHtml from "@/hooks/htmlHandler";
-import { cleanPageContent, initAssistant } from "@/hooks/recipeAnalyzer";
+import { cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
 import { useState } from "react";
 import { Searchbar } from "react-native-paper";
 
 export type UrlSearchbarProps = {
     textColor: string,
-    threadId: string,
+    onThreadCreated: (threadId: string) => void,
     onContentReceived: (content: string) => void,
     onContentAnalyzed: () => void,
     onError: (err: any) => void,
@@ -13,12 +13,13 @@ export type UrlSearchbarProps = {
     placeholder: string
 };
 
-export default function UrlSearchbar({ textColor, threadId, onContentReceived, onContentAnalyzed, onError,
-        id = 'urlInput',
-        placeholder = 'Enter URL here' }: UrlSearchbarProps) {
+export default function UrlSearchbar({ textColor, onThreadCreated, onContentReceived, onContentAnalyzed, onError,
+    id = 'urlInput',
+    placeholder = 'Enter URL here' }: UrlSearchbarProps) {
 
     const [url, setUrl] = useState('');
     const [urlInputLoading, setUrlInputLoading] = useState(false);
+    const [threadId, setThreadId] = useState('');
 
     const onSubmitEditing = (threadId: string,
         onContentReceived: (content: string) => void,
@@ -28,17 +29,18 @@ export default function UrlSearchbar({ textColor, threadId, onContentReceived, o
         getHtml(url)
             .then(html => cleanPageContent(html))
             .then(html => {
+                initThread(html)
+                    .then(threadId => {
+                        setThreadId(threadId);
+                        onThreadCreated(threadId);
+                    })
+                    .then(_ => {
+                        onContentAnalyzed();
+                        setUrlInputLoading(false);
+                    })
                 onContentReceived(html);
-                setUrlInputLoading(false);
                 return html;
             })
-            .then(html => initAssistant(html, threadId)
-                .then(_ => onContentAnalyzed())
-                .catch(error => {
-                    console.error('Error initing assistant:', error);
-                    onError(error);
-                })
-            )
             .catch(error => {
                 console.error('Error fetching HTML:', error);
                 setUrlInputLoading(false);
