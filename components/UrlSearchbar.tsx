@@ -53,7 +53,6 @@ export default function UrlSearchbar({ textColor, onThreadCreated, onContentRece
             value={url}
             id={id}
             placeholder={placeholder}
-            placeholderTextColor={textColor}
             onChangeText={newText => setUrl(newText)}
             loading={urlInputLoading}
             onSubmitEditing={_ => onSubmitEditing(threadId, onContentReceived, onContentAnalyzed, onError)}

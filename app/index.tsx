@@ -16,8 +16,6 @@ export default function Index() {
 
   const textColor = useThemeColor({ light: 'black', dark: 'white' }, 'text');
 
-  console.log(`starting! textColor: ${textColor}`)
-
   return (
     <GestureHandlerRootView>
       <View
@@ -45,7 +43,7 @@ export default function Index() {
         {showQuestionInput && <Searchbar 
         id='questionInput'
         placeholder="Ask a question here"
-        placeholderTextColor={textColor}
+        onChangeText={text => setQuestion(text)}
         value={question}
         onSubmitEditing={_ =>
           askQuestion(question, threadId)
