@@ -3,19 +3,30 @@ import { TextContentBlock } from 'openai/resources/beta/threads/messages';
 import { measureDuration } from './utils/durationUtils';
 
 const model = 'gpt-4o'
-const assistantId = process.env.EXPO_PUBLIC_ASSISTANT_ID?.trim();
+const assistantId = process.env.EXPO_PUBLIC_ASSISTANT_ID?.trim() as string;
 const apiKey = process.env.EXPO_PUBLIC_OPENAI_KEY;
 
 // TODO remove dangerouslyAllowBrowser
 const client = new OpenAI({apiKey: apiKey, dangerouslyAllowBrowser: true})
 
-export async function cleanPageContent(pageContent: string): Promise<string> {
+export async function cleanPageContent(pageContent: string): Promise<FullRecipeInfo> {
     return measureDuration('cleanHtml', async () => {
 
         const systemPrompt = `You are an HTML and web design expert.
         When prompted with the content of an web page, you will remove anything that isn't the actual content of the page, the page's body, 
-        such as links, ads, headers, footers, disclaimers, copy rights, etc. You will only leave the actual content of the page.`
-        const userPrompt = `This is the content of my web page, remove any boilerplate from it, leaving just the actual content of the article: ${pageContent}`
+        such as links, ads, headers, footers, disclaimers, copy rights, etc. You will only leave the actual content of the page.
+        
+        You will provide your answer in json format. It will include the cleaned content of the page parsed into these fields:
+        - title
+        - intro
+        - prepAndCookTime - an object with the fields workTime, totalTime, difficulty
+        - ingredients - an array of strings
+        - steps
+        - comments
+
+        Your response will contain the json object only, no other information. The 1st char of the response should be '{' and the last '}'.
+        `
+        const userPrompt = `This is the content of my web page, remove any boilerplate from it, leaving just the actual content of the article.${pageContent}`
 
         console.log('cleaning page content')
         const response = await client.chat.completions.create({
@@ -30,21 +41,23 @@ export async function cleanPageContent(pageContent: string): Promise<string> {
         });
 
         const clean = response.choices[0].message.content as string;
-
         console.log(`cleaned page content: ${clean}`);
-        return clean;
+        const parsedRecipeInfo: FullRecipeInfo = JSON.parse(clean);
+        
+        return parsedRecipeInfo;
     });
 }
 
-export async function initThread(recipe: string): Promise<string> {
+export async function initThread(recipe: FullRecipeInfo): Promise<string> {
     return measureDuration('initThread', async () => {
 
         console.log('creating thread')
+        const recipeString = JSON.stringify(recipe);
         const thread = await client.beta.threads.create({
             messages: [
                 {
                     role: 'user',
-                    content: `This is my receipt: ${recipe}. Analyze it for me.`
+                    content: `This is my receipt: ${recipeString}. Analyze it for me.`
                 }
             ]
         });
@@ -88,5 +101,18 @@ async function waitForRun(run: OpenAI.Beta.Threads.Runs.Run): Promise<string> {
             }
         }
     });
+}
+
+export interface FullRecipeInfo {
+    title: string,
+    intro: string,
+    prepAndCookTime: {
+        workTime: string,
+        totalTime: string,
+        difficulty: string
+    },
+    ingredients: string[],
+    steps: string[],
+    comments: string
 }
 

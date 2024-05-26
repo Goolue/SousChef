@@ -1,19 +1,18 @@
 import getHtml from "@/hooks/htmlHandler";
-import { cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
+import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
 import { useState } from "react";
 import { Searchbar } from "react-native-paper";
 
 export type UrlSearchbarProps = {
-    textColor: string,
     onThreadCreated: (threadId: string) => void,
-    onContentReceived: (content: string) => void,
+    onContentReceived: (content: FullRecipeInfo) => void,
     onContentAnalyzed: () => void,
     onError: (err: any) => void,
     id: string,
     placeholder: string
 };
 
-export default function UrlSearchbar({ textColor, onThreadCreated, onContentReceived, onContentAnalyzed, onError,
+export default function UrlSearchbar({ onThreadCreated, onContentReceived, onContentAnalyzed, onError,
     id = 'urlInput',
     placeholder = 'Enter URL here' }: UrlSearchbarProps) {
 
@@ -21,15 +20,14 @@ export default function UrlSearchbar({ textColor, onThreadCreated, onContentRece
     const [urlInputLoading, setUrlInputLoading] = useState(false);
     const [threadId, setThreadId] = useState('');
 
-    const onSubmitEditing = (threadId: string,
-        onContentReceived: (content: string) => void,
+    const onSubmitEditing = (onContentReceived: (content: FullRecipeInfo) => void,
         onContentAnalyzed: () => void,
         onError: (err: any) => void): void => {
         setUrlInputLoading(true);
         getHtml(url)
             .then(html => cleanPageContent(html))
-            .then(html => {
-                initThread(html)
+            .then(fullRecipe => {
+                initThread(fullRecipe)
                     .then(threadId => {
                         setThreadId(threadId);
                         onThreadCreated(threadId);
@@ -38,8 +36,8 @@ export default function UrlSearchbar({ textColor, onThreadCreated, onContentRece
                         onContentAnalyzed();
                         setUrlInputLoading(false);
                     })
-                onContentReceived(html);
-                return html;
+                onContentReceived(fullRecipe);
+                return fullRecipe;
             })
             .catch(error => {
                 console.error('Error fetching HTML:', error);
