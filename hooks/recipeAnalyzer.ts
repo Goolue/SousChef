@@ -24,7 +24,7 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
         - steps
         - comments
 
-        Your response will contain the json object only, no other information. The 1st char of the response should be '{' and the last '}'.
+        Your response will contain the json object only, no other information, no starting or ending quote marks. The 1st char of the response should be '{' and the last '}'.
         `
         const userPrompt = `This is the content of my web page, remove any boilerplate from it, leaving just the actual content of the article.${pageContent}`
 
@@ -105,14 +105,14 @@ async function waitForRun(run: OpenAI.Beta.Threads.Runs.Run): Promise<string> {
 
 export interface FullRecipeInfo {
     title: string,
-    intro: string,
-    prepAndCookTime: {
+    intro?: string,
+    prepAndCookTime?: {
         workTime: string,
         totalTime: string,
         difficulty: string
     },
     ingredients: string[],
     steps: string[],
-    comments: string
+    comments?: string
 }
 

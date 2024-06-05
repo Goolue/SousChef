@@ -8,30 +8,34 @@ export type UrlSearchbarProps = {
     onContentReceived: (content: FullRecipeInfo) => void,
     onContentAnalyzed: () => void,
     onError: (err: any) => void,
-    id: string,
-    placeholder: string
+    onSubmit?: () => void,
+    id?: string,
+    placeholder?: string
 };
 
-export default function UrlSearchbar({ onThreadCreated, onContentReceived, onContentAnalyzed, onError,
+export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentReceived, onContentAnalyzed, onError,
     id = 'urlInput',
     placeholder = 'Enter URL here' }: UrlSearchbarProps) {
 
     const [url, setUrl] = useState('');
     const [urlInputLoading, setUrlInputLoading] = useState(false);
-    const [threadId, setThreadId] = useState('');
 
-    const onSubmitEditing = (onContentReceived: (content: FullRecipeInfo) => void,
+    const onSubmitEditing = (
+        onContentReceived: (content: FullRecipeInfo) => void,
         onContentAnalyzed: () => void,
-        onError: (err: any) => void): void => {
+        onError: (err: any) => void,
+        onSubmit?: () => void
+    ): void => {
         setUrlInputLoading(true);
+        if (onSubmit) {
+            onSubmit();
+        }
+
         getHtml(url)
             .then(html => cleanPageContent(html))
             .then(fullRecipe => {
                 initThread(fullRecipe)
-                    .then(threadId => {
-                        setThreadId(threadId);
-                        onThreadCreated(threadId);
-                    })
+                    .then(threadId => onThreadCreated(threadId))
                     .then(_ => {
                         onContentAnalyzed();
                         setUrlInputLoading(false);
@@ -53,7 +57,7 @@ export default function UrlSearchbar({ onThreadCreated, onContentReceived, onCon
             placeholder={placeholder}
             onChangeText={newText => setUrl(newText)}
             loading={urlInputLoading}
-            onSubmitEditing={_ => onSubmitEditing(threadId, onContentReceived, onContentAnalyzed, onError)}
+            onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}
         />
     );
 }
