@@ -21,8 +21,8 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
         - intro
         - prepAndCookTime - an object with the fields workTime, totalTime, difficulty
         - ingredients - an array of strings
-        - steps
-        - comments
+        - steps - an array of strings. These are the steps to make the recipe.
+        - comments - an array of strings. These are comments from the author, such as "It is better to do it in a chill room". Not comments from users or reviews. Summarize them into points, no more then 10 points.
 
         Your response will contain the json object only, no other information, no starting or ending quote marks. The 1st char of the response should be '{' and the last '}'.
         `
@@ -113,6 +113,6 @@ export interface FullRecipeInfo {
     },
     ingredients: string[],
     steps: string[],
-    comments?: string
+    comments?: string[]
 }
 

@@ -41,17 +41,20 @@ const RecipeSummary: React.FC<RecipeSummaryProps> = ({ recipeInfo, itemNumberOfL
                             </List.Accordion>}
                             <List.Accordion title="Ingredients" id='ingredients'>
                                 {recipeInfo.ingredients.map((ingredient, index) => (
-                                    <SummaryItem key={index} title={ingredient} />
+                                    <SummaryItem key={index} title={`${index + 1}. ${ingredient}`} />
                                 ))}
                             </List.Accordion>
                             <List.Accordion title="Steps" id='steps'>
                                 {recipeInfo.steps.map((step, index) => (
-                                    <SummaryItem key={index} title={step} />
+                                    <SummaryItem key={index} title={`${index + 1}. ${step}`} />
                                 ))}
                             </List.Accordion>
-                            {recipeInfo.comments && recipeInfo.comments.length > 0 && <List.Accordion title="Comments" id='comments'>
-                                <SummaryItem title={recipeInfo.comments} />
-                            </List.Accordion>}
+                            {recipeInfo.comments && recipeInfo.comments.length > 0 &&
+                                <List.Accordion title="Comments" id='comments'>
+                                    {recipeInfo.comments.map((comment, index) => (
+                                        <SummaryItem key={index} title={`${index + 1}. ${comment}`} />)
+                                    )}
+                                </List.Accordion>}
                         </List.AccordionGroup>
 
                     </View>
