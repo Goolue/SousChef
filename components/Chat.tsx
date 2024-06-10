@@ -1,6 +1,7 @@
 import { GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { useCallback, useImperativeHandle, useState } from "react";
 import React from "react";
+import { TextInput } from "react-native-paper";
 
 const user: User = {
     _id: 0,
@@ -14,7 +15,8 @@ export interface ChatMessage {
 
 export interface ChatProps {
     isTyping: boolean,
-    disableComposer: boolean
+    disableComposer: boolean,
+    onSend: (message: string) => void
 }
 
 const toIMessage = (msg: ChatMessage): IMessage => {
@@ -29,17 +31,24 @@ const toIMessage = (msg: ChatMessage): IMessage => {
     }
 };
 
-const Chat = React.forwardRef(({ isTyping, disableComposer } : ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
+// const CustomInput = (props: ComposerProps) => {
+//     return (
+//         <TextInput {...props} />
+//     )
+// };
+
+const Chat = React.forwardRef(({ isTyping, disableComposer, onSend }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
     const [messages, setMessages] = useState<IMessage[]>([])
 
-    const onSend = useCallback((messages: IMessage[] = []) => {
+    const appendMessage = useCallback((messages: IMessage[] = []) => {
         setMessages(previousMessages =>
             GiftedChat.append(previousMessages, messages),
         )
     }, [])
 
     const sendMessage = (msg: ChatMessage) => {
-        onSend([toIMessage(msg)]);
+        appendMessage([toIMessage(msg)]);
+        onSend(msg.text);
     }
 
     useImperativeHandle(ref, () => ({
@@ -51,11 +60,15 @@ const Chat = React.forwardRef(({ isTyping, disableComposer } : ChatProps, ref: R
             messages={messages}
             isTyping={isTyping}
             user={user}
-            onSend={messages => onSend(messages)}
+            onSend={messages => {
+                appendMessage(messages);
+                onSend(messages[0].text)
+            }}
             placeholder="Ask the chef a question..."
             disableComposer={disableComposer}
             showUserAvatar={false}
-            isKeyboardInternallyHandled={true}
+            alwaysShowSend={false}
+            // renderComposer={props => <CustomInput {...props} />}
         />
     )
 });
