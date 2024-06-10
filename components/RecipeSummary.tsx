@@ -26,7 +26,7 @@ const RecipeSummary: React.FC<RecipeSummaryProps> = ({ recipeInfo, itemNumberOfL
 
     return (
         <Animated.View entering={BounceInDown.duration(1000)}>
-            <Card>
+            <Card mode='contained'>
                 <Card.Title title={recipeInfo.title} titleNumberOfLines={titleNumberOfLines} />
                 <Card.Content>
                     <View>
