@@ -1,13 +1,9 @@
-import { OpenAI } from 'openai';
+import OpenAiUtils from './utils/openaiUtils';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages';
 import { measureDuration } from './utils/durationUtils';
+import OpenAI from 'openai';
 
-const model = 'gpt-4o'
-const assistantId = process.env.EXPO_PUBLIC_ASSISTANT_ID?.trim() as string;
-const apiKey = process.env.EXPO_PUBLIC_OPENAI_KEY;
-
-// TODO remove dangerouslyAllowBrowser
-const client = new OpenAI({apiKey: apiKey, dangerouslyAllowBrowser: true})
+const client = OpenAiUtils.client;
 
 export async function cleanPageContent(pageContent: string): Promise<FullRecipeInfo> {
     return measureDuration('cleanHtml', async () => {
@@ -31,7 +27,7 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
         console.log('cleaning page content')
         const response = await client.chat.completions.create({
             stream: false,
-            model,
+            model: OpenAiUtils.models.completion['gpt-4o'],
             n: 1,
             temperature: 1,
             messages: [
@@ -69,12 +65,12 @@ export async function initThread(recipe: FullRecipeInfo): Promise<string> {
 
 export async function askQuestion(question: string, threadId: string): Promise<string> {
     return measureDuration('askQuestion', async () => {
-        console.log('sending question message')
+        console.log(`sending question message: ${question}`)
         await client.beta.threads.messages.create(threadId, { role: "user", content: question });
 
         console.log('running assistant')
         let run = await client.beta.threads.runs.createAndPoll(
-            threadId, { assistant_id: assistantId }
+            threadId, { assistant_id: OpenAiUtils.constants.assistantId }
         );
 
         return await waitForRun(run);
