@@ -6,6 +6,27 @@ import { measureDuration } from './utils/durationUtils';
 
 const client = OpenAiUtils.client;
 
+export async function tts(text: string): Promise<AVPlaybackStatus> {
+    console.log(`TTS: ${text}`);
+    const response = await measureDuration('TTS', async () => {
+        return client.audio.speech.create({
+            model: "tts-1",
+            voice: "alloy",
+            input: text,
+        });
+    });
+
+    console.log('TTS got response. Playing sound')
+
+    return measureDuration('playSound', async () => {
+        const blob = await response.blob();
+        const buffer = await toBuffer(blob);
+        const tempFilePath = await constructTempFilePath(buffer);
+        const { sound } = await Audio.Sound.createAsync({ uri: tempFilePath });
+        return sound.playAsync();
+    });
+}
+
 const toBuffer = async (blob: Blob) => {
     const uri = await toDataURI(blob);
     const base64 = uri.replace(/^.*,/g, "");
@@ -34,24 +55,3 @@ const constructTempFilePath = async (buffer: Buffer) => {
 
     return tempFilePath;
 };
-
-export async function tts(text: string): Promise<AVPlaybackStatus> {
-    console.log(`TTS: ${text}`);
-    const response = await measureDuration('TTS', async () => {
-        return client.audio.speech.create({
-            model: "tts-1",
-            voice: "alloy",
-            input: text,
-        });
-    });
-
-    console.log('TTS got response. Playing sound')
-
-    return measureDuration('playSound', async () => {
-        const blob = await response.blob();
-        const buffer = await toBuffer(blob);
-        const tempFilePath = await constructTempFilePath(buffer);
-        const { sound } = await Audio.Sound.createAsync({ uri: tempFilePath });
-        return sound.playAsync();
-    });
-}
