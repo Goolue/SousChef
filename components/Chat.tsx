@@ -39,6 +39,7 @@ const toIMessage = (msg: ChatMessage): IMessage => {
 
 const Chat = React.forwardRef(({ isTyping, disableComposer, onSend }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
     const [messages, setMessages] = useState<IMessage[]>([])
+    const [loading, setLoading] = useState(false)
 
     const appendMessage = useCallback((messages: IMessage[] = []) => {
         setMessages(previousMessages =>
@@ -46,29 +47,32 @@ const Chat = React.forwardRef(({ isTyping, disableComposer, onSend }: ChatProps,
         )
     }, [])
 
-    const sendMessage = (msg: ChatMessage) => {
+    const addAnswer = (msg: ChatMessage) => {
+        setLoading(false);
         appendMessage([toIMessage(msg)]);
-        onSend(msg.text);
+    }
+
+    const addQuestion = (messages: IMessage[]) => {
+        appendMessage(messages);
+        setLoading(true);
+        onSend(messages[0].text)
     }
 
     useImperativeHandle(ref, () => ({
-        sendMessage,
+        sendMessage: addAnswer,
     }));
 
     return (
         <GiftedChat
             messages={messages}
-            isTyping={isTyping}
+            isTyping={loading}
             user={user}
-            onSend={messages => {
-                appendMessage(messages);
-                onSend(messages[0].text)
-            }}
+            onSend={messages => addQuestion(messages)}
             placeholder="Ask the chef a question..."
             disableComposer={disableComposer}
             showUserAvatar={false}
             alwaysShowSend={false}
-            // renderComposer={props => <CustomInput {...props} />}
+        // renderComposer={props => <CustomInput {...props} />}
         />
     )
 });

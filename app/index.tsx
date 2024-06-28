@@ -11,16 +11,12 @@ import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
   const [showQuestionInput, setShowQuestionInput] = useState(false);
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
   const [threadId, setThreadId] = useState('');
 
   const chatRef = useRef<{ sendMessage: (message: ChatMessage) => void } | null>(null);
 
   const ask = async (question: string) => {
     const answer = await askQuestion(question, threadId);
-    setAnswer(answer);
-
     const message: ChatMessage = {
       text: answer,
       user: {
