@@ -2,6 +2,7 @@ import { GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { useCallback, useImperativeHandle, useState } from "react";
 import React from "react";
 import { TextInput } from "react-native-paper";
+import { tts } from "@/hooks/audioHandler";
 
 const user: User = {
     _id: 0,
@@ -14,7 +15,6 @@ export interface ChatMessage {
 }
 
 export interface ChatProps {
-    isTyping: boolean,
     disableComposer: boolean,
     onSend: (message: string) => void
 }
@@ -37,7 +37,7 @@ const toIMessage = (msg: ChatMessage): IMessage => {
 //     )
 // };
 
-const Chat = React.forwardRef(({ isTyping, disableComposer, onSend }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
+const Chat = React.forwardRef(({ disableComposer, onSend }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
     const [messages, setMessages] = useState<IMessage[]>([])
     const [loading, setLoading] = useState(false)
 
@@ -50,6 +50,7 @@ const Chat = React.forwardRef(({ isTyping, disableComposer, onSend }: ChatProps,
     const addAnswer = (msg: ChatMessage) => {
         setLoading(false);
         appendMessage([toIMessage(msg)]);
+        tts(msg.text);
     }
 
     const addQuestion = (messages: IMessage[]) => {

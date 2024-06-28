@@ -1,4 +1,4 @@
-import OpenAiUtils from './utils/openaiUtils';
+import OpenAiUtils from '../constants/OpenaiConstants';
 import { TextContentBlock } from 'openai/resources/beta/threads/messages';
 import { measureDuration } from './utils/durationUtils';
 import OpenAI from 'openai';

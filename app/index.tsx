@@ -37,7 +37,7 @@ export default function Index() {
       }
     }}>
       <GestureHandlerRootView >
-      <View style={{
+        <View style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
@@ -64,7 +64,7 @@ export default function Index() {
         >
           {/*TODO this does not scroll*/}
           <BottomSheetScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <Chat isTyping={false} disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} />
+            <Chat disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} />
           </BottomSheetScrollView>
         </BottomSheet>
       </GestureHandlerRootView>
