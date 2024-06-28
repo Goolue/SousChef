@@ -5,13 +5,14 @@ import { FullRecipeInfo, askQuestion } from "@/hooks/recipeAnalyzer";
 import { useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { DefaultTheme, PaperProvider } from "react-native-paper";
+import { DefaultTheme, FAB, PaperProvider } from "react-native-paper";
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
   const [showQuestionInput, setShowQuestionInput] = useState(false);
   const [threadId, setThreadId] = useState('');
+  const [playSound, setPlaySound] = useState(true);
 
   const chatRef = useRef<{ sendMessage: (message: ChatMessage) => void } | null>(null);
 
@@ -59,14 +60,28 @@ export default function Index() {
         <BottomSheet
           ref={bottomSheetRef}
           index={showQuestionInput ? 0 : -1}
-          snapPoints={[50, '50%', '85%', '90%']}
+          snapPoints={[50, '50%', '90%']}
           style={{ alignContent: 'center', justifyContent: 'center' }}
         >
           {/*TODO this does not scroll*/}
           <BottomSheetScrollView contentContainerStyle={{ flexGrow: 1 }}>
-            <Chat disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} />
+            <Chat playSound={playSound} disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} />
           </BottomSheetScrollView>
         </BottomSheet>
+        <FAB
+          style={{
+            position: 'absolute',
+            margin: 16,
+            right: 0,
+            bottom: 30,
+            borderRadius: 100,
+          }}
+          icon={playSound ? 'volume-off' : 'volume-high'}
+          mode='flat'
+          size='medium'
+          visible={showQuestionInput}
+          onPress={() => setPlaySound(!playSound)}
+        />
       </GestureHandlerRootView>
     </PaperProvider >
   );

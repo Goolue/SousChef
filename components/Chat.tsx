@@ -16,7 +16,8 @@ export interface ChatMessage {
 
 export interface ChatProps {
     disableComposer: boolean,
-    onSend: (message: string) => void
+    onSend: (message: string) => void,
+    playSound: boolean
 }
 
 const toIMessage = (msg: ChatMessage): IMessage => {
@@ -37,7 +38,7 @@ const toIMessage = (msg: ChatMessage): IMessage => {
 //     )
 // };
 
-const Chat = React.forwardRef(({ disableComposer, onSend }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
+const Chat = React.forwardRef(({ disableComposer, onSend, playSound }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
     const [messages, setMessages] = useState<IMessage[]>([])
     const [loading, setLoading] = useState(false)
 
@@ -50,7 +51,14 @@ const Chat = React.forwardRef(({ disableComposer, onSend }: ChatProps, ref: Reac
     const addAnswer = (msg: ChatMessage) => {
         setLoading(false);
         appendMessage([toIMessage(msg)]);
-        tts(msg.text);
+
+        if (playSound) {
+            console.log('Playing sound')
+            tts(msg.text);
+        }
+        else {
+            console.log('Not playing sound')
+        }
     }
 
     const addQuestion = (messages: IMessage[]) => {
