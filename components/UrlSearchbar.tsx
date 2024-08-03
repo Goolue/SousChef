@@ -2,6 +2,8 @@ import getHtml from "@/hooks/htmlHandler";
 import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
 import { useState } from "react";
 import { Searchbar } from "react-native-paper";
+import Animated, { FadeOutUp } from "react-native-reanimated";
+import { StyleSheet } from "react-native";
 
 export type UrlSearchbarProps = {
     onThreadCreated: (threadId: string) => void,
@@ -10,13 +12,14 @@ export type UrlSearchbarProps = {
     onError: (err: any) => void,
     onSubmit?: () => void,
     id?: string,
-    placeholder?: string
+    placeholder?: string,
 };
 
 export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentReceived, onContentAnalyzed, onError,
     id = 'urlInput',
     placeholder = 'Enter URL here' }: UrlSearchbarProps) {
 
+    const [visible, setVisible] = useState(true);
     const [url, setUrl] = useState('');
     const [urlInputLoading, setUrlInputLoading] = useState(false);
 
@@ -43,6 +46,7 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
                 onContentReceived(fullRecipe);
                 return fullRecipe;
             })
+            .then(_ => setVisible(false))
             .catch(error => {
                 console.error('Error fetching HTML:', error);
                 setUrlInputLoading(false);
@@ -50,14 +54,34 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
             });
     }
 
-    return (
-        <Searchbar
-            value={url}
-            id={id}
-            placeholder={placeholder}
-            onChangeText={newText => setUrl(newText)}
-            loading={urlInputLoading}
-            onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}
-        />
+    return visible && (
+        <Animated.View
+            exiting={FadeOutUp}
+            style={styles.searchbarView}
+        >
+            <Searchbar
+                style={styles.searchbar}
+                traileringIcon={'clipboard-outline'}
+                onTraileringIconPress={_ => console.log('Clipboard icon pressed')}
+                value={url}
+                id={id}
+                placeholder={placeholder}
+                onChangeText={newText => setUrl(newText)}
+                loading={urlInputLoading}
+                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}
+            />
+        </Animated.View>
     );
 }
+
+const styles = StyleSheet.create({
+    searchbarView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100%",
+    },
+    searchbar: {
+        borderWidth: 3,
+    }
+});
