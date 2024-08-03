@@ -1,4 +1,4 @@
-import { GiftedChat, IMessage, User } from "react-native-gifted-chat";
+import { Bubble, GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { useCallback, useImperativeHandle, useState } from "react";
 import React from "react";
 import { TextInput } from "react-native-paper";
@@ -32,11 +32,6 @@ const toIMessage = (msg: ChatMessage): IMessage => {
     }
 };
 
-// const CustomInput = (props: ComposerProps) => {
-//     return (
-//         <TextInput {...props} />
-//     )
-// };
 
 const Chat = React.forwardRef(({ disableComposer, onSend, playSound }: ChatProps, ref: React.Ref<{ sendMessage: (message: ChatMessage) => void }>) => {
     const [messages, setMessages] = useState<IMessage[]>([])
@@ -71,6 +66,22 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound }: ChatProps
         sendMessage: addAnswer,
     }));
 
+    const renderBubble = (props: any) => {
+        return (
+            <Bubble
+                {...props}
+                wrapperStyle={{
+                    right: {
+                        borderWidth: 2,
+                    },
+                    left: {
+                        borderWidth: 2,
+                    },
+                }}
+            />
+        );
+    }
+
     return (
         <GiftedChat
             messages={messages}
@@ -81,6 +92,7 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound }: ChatProps
             disableComposer={disableComposer}
             showUserAvatar={false}
             alwaysShowSend={false}
+            renderBubble={renderBubble}
         // renderComposer={props => <CustomInput {...props} />}
         />
     )
