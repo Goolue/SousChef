@@ -45,8 +45,7 @@ export default function Index() {
     <PaperProvider theme={{
       colors: {
         ...DefaultTheme.colors,
-        // ...Colors,
-        // onSurfaceVariant: 'red'
+        ...Colors,
       }
     }}>
       <GestureHandlerRootView >

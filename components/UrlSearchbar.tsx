@@ -1,9 +1,10 @@
 import getHtml from "@/hooks/htmlHandler";
 import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
 import { useState } from "react";
-import { Searchbar } from "react-native-paper";
+import { DefaultTheme, Searchbar } from "react-native-paper";
 import Animated, { FadeOutUp } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
+import Colors from "@/constants/Colors";
 
 export type UrlSearchbarProps = {
     onThreadCreated: (threadId: string) => void,
@@ -61,6 +62,8 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
         >
             <Searchbar
                 style={styles.searchbar}
+                theme={{...DefaultTheme, colors: {...Colors, background: 'red'}}}
+                inputStyle={styles.backgroundColor}
                 traileringIcon={'clipboard-outline'}
                 onTraileringIconPress={_ => console.log('Clipboard icon pressed')}
                 value={url}
@@ -83,5 +86,8 @@ const styles = StyleSheet.create({
     },
     searchbar: {
         borderWidth: 3,
+    },
+    backgroundColor: {
+        backgroundColor: Colors.surfaceVariant
     }
 });
