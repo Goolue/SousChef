@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
     },
     searchbar: {
         borderWidth: 3,
+        backgroundColor: Colors.surfaceVariant
     },
     backgroundColor: {
         backgroundColor: Colors.surfaceVariant
