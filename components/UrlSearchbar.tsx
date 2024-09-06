@@ -64,6 +64,11 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
             });
     }
 
+    const pasteFromClipboard = async (_ : any) => {
+        const text = await Clipboard.getStringAsync();
+        setUrl(text);
+    }
+
     return visible && (
         <Animated.View
             exiting={FadeOutUp}
@@ -74,10 +79,7 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
                 theme={{...DefaultTheme, colors: {...Colors, background: 'red'}}}
                 inputStyle={styles.backgroundColor}
                 traileringIcon={'clipboard-outline'}
-                onTraileringIconPress={async _ => {
-                    const text = await Clipboard.getStringAsync();
-                    setUrl(text);
-                }}
+                onTraileringIconPress={pasteFromClipboard}
                 value={url}
                 id={id}
                 placeholder={placeholder}
