@@ -1,7 +1,7 @@
 import getHtml from "@/hooks/htmlHandler";
 import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
 import { useState } from "react";
-import { DefaultTheme, Searchbar } from "react-native-paper";
+import { DefaultTheme, HelperText, Searchbar } from "react-native-paper";
 import Animated, { FadeOutUp } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
@@ -23,6 +23,7 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
     const [visible, setVisible] = useState(true);
     const [url, setUrl] = useState('');
     const [urlInputLoading, setUrlInputLoading] = useState(false);
+    const [errorText, setErrorText] = useState('');
 
     const onSubmitEditing = (
         onContentReceived: (content: FullRecipeInfo) => void,
@@ -35,19 +36,26 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
             onSubmit();
         }
 
-        getHtml(url)
+        const getHtmlErrHandler = (err: unknown) => {
+            setErrorText(`${err}`)
+            console.error(`errorText is now: ${err}`)
+        };
+        getHtml(url, getHtmlErrHandler)
             .then(html => cleanPageContent(html))
             .then(fullRecipe => {
+                if (fullRecipe === null) {
+                    return null;
+                }
                 initThread(fullRecipe)
                     .then(threadId => onThreadCreated(threadId))
                     .then(_ => {
                         onContentAnalyzed();
                         setUrlInputLoading(false);
+                        setVisible(false);
                     })
                 onContentReceived(fullRecipe);
                 return fullRecipe;
             })
-            .then(_ => setVisible(false))
             .catch(error => {
                 console.error('Error fetching HTML:', error);
                 setUrlInputLoading(false);
@@ -71,8 +79,11 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
                 placeholder={placeholder}
                 onChangeText={newText => setUrl(newText)}
                 loading={urlInputLoading}
-                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}
+                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}  
             />
+            <HelperText type="error" visible={errorText !== ''}> 
+                {errorText}
+            </HelperText>
         </Animated.View>
     );
 }

@@ -7,6 +7,7 @@ import { FAB } from "react-native-paper";
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { StyleSheet } from "react-native";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
+import Colors from "@/constants/Colors";
 
 export type ResultsViewProps = {
     fullRecipeInfo: FullRecipeInfo,
@@ -36,12 +37,12 @@ export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps
 
 
     return (
-        <View>
+        <View style={styles.view}>
             <ScrollView>
                 <RecipeSummary recipeInfo={fullRecipeInfo} />
             </ScrollView>
 
-             <BottomSheet
+            <BottomSheet
                 ref={bottomSheetRef}
                 index={0}
                 snapPoints={[50, '90%']}
@@ -49,7 +50,7 @@ export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps
             >
                 <BottomSheetScrollView contentContainerStyle={{ flexGrow: 1 }}>
                     <Chat playSound={playSound} disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} />
-                </BottomSheetScrollView>
+                 </BottomSheetScrollView>
             </BottomSheet>
 
             <FAB
@@ -85,6 +86,13 @@ export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps
 }
 
 const styles = StyleSheet.create({
+    view: {
+        flex: 1,
+        alignContent: 'center',
+        width: '95%',
+        marginLeft: '2.5%',
+        marginTop: 10,
+    },
     fab: {
         position: 'absolute',
         margin: 16,
@@ -92,15 +100,16 @@ const styles = StyleSheet.create({
         bottom: 30,
         borderWidth: 3,
         opacity: 0.8,
+        backgroundColor: Colors.surface,
     },
     fabSpeak: {
         margin: 16,
         right: -10,
-        bottom: 30,
+        bottom: 45,
     },
     fabAlwaysOn: {
         margin: 16,
         right: 0,
-        bottom: 100,
+        bottom: 115,
     },
 });

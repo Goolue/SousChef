@@ -1,8 +1,9 @@
 import { Bubble, GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { useCallback, useImperativeHandle, useState } from "react";
 import React from "react";
-import { TextInput } from "react-native-paper";
+import { TextInput, Text, DefaultTheme, Button } from "react-native-paper";
 import { tts } from "@/hooks/audioHandler";
+import Colors from "@/constants/Colors";
 
 const user: User = {
     _id: 0,
@@ -73,9 +74,11 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound }: ChatProps
                 wrapperStyle={{
                     right: {
                         borderWidth: 2,
+                        backgroundColor: Colors.background,
                     },
                     left: {
                         borderWidth: 2,
+                        backgroundColor: Colors.surfaceVariant,
                     },
                 }}
             />
@@ -93,7 +96,18 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound }: ChatProps
             showUserAvatar={false}
             alwaysShowSend={false}
             renderBubble={renderBubble}
-        // renderComposer={props => <CustomInput {...props} />}
+            // renderComposer={props => <TextInput onChangeText={(text: string) => props.text = text} theme={DefaultTheme} mode="outlined" style={{
+            //     width: '50%'
+            // }}/>}
+            
+            // TODO test
+            renderSend={props => <Button onTouchEnd={() => {
+                const {text, onSend} = props;
+                if (text && onSend) {
+                    console.log(`send: ${text}`)
+                    onSend({text: text, _id: 1}, true)
+                }
+            }}>Send</Button>}
         />
     )
 });

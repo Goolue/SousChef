@@ -25,6 +25,11 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
         const userPrompt = `This is the content of my web page, remove any boilerplate from it, leaving just the actual content of the article.${pageContent}`
 
         console.log('cleaning page content')
+        if (!pageContent || pageContent.length === 0) {
+            console.log('page content is empty')
+            return null;
+        }
+
         const response = await client.chat.completions.create({
             stream: false,
             model: OpenAiUtils.models.completion['gpt-4o'],

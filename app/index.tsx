@@ -1,16 +1,12 @@
-import Chat, { ChatMessage } from "@/components/Chat";
-import RecipeSummary from "@/components/RecipeSummary";
 import UrlSearchbar from "@/components/UrlSearchbar";
-import { FullRecipeInfo, askQuestion } from "@/hooks/recipeAnalyzer";
-import { useRef, useState } from "react";
-import { ScrollView } from "react-native";
+import { FullRecipeInfo } from "@/hooks/recipeAnalyzer";
+import { useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { DefaultTheme, FAB, PaperProvider } from "react-native-paper";
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { DefaultTheme, PaperProvider } from "react-native-paper";
 import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import ResultsView from "@/components/ResultsView";
+import Chat from "@/components/Chat";
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);

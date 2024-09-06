@@ -2,7 +2,7 @@ import cheerio from 'cheerio';
 import { measureDuration } from './utils/durationUtils';
 import axios from 'axios';
 
-export default async function getHtml(url: string): Promise<string> {
+export default async function getHtml(url: string, onError: (err: unknown) => void): Promise<string> {
     return measureDuration('getHtml', async () => {
         try {
             const response = await axios.get(url, { responseType: 'text' });
@@ -20,6 +20,12 @@ export default async function getHtml(url: string): Promise<string> {
             return textElementsArr.join('\n');
         } catch (error) {
             console.error('Error in getHtml:', error);
+            if (typeof error === 'string') {
+                onError(error)
+            }
+            else if (error instanceof Error) {
+                onError(error.message)
+            }
             return '';
         }
     });
