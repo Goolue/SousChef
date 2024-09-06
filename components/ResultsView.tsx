@@ -41,7 +41,7 @@ export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps
                 <RecipeSummary recipeInfo={fullRecipeInfo} />
             </ScrollView>
 
-            {/* <BottomSheet
+             <BottomSheet
                 ref={bottomSheetRef}
                 index={0}
                 snapPoints={[50, '90%']}
@@ -50,7 +50,7 @@ export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps
                 <BottomSheetScrollView contentContainerStyle={{ flexGrow: 1 }}>
                     <Chat playSound={playSound} disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} />
                 </BottomSheetScrollView>
-            </BottomSheet> */}
+            </BottomSheet>
 
             <FAB
                 style={{ ...styles.fab, ...styles.fabSpeak }}
