@@ -5,6 +5,7 @@ import { DefaultTheme, HelperText, Searchbar } from "react-native-paper";
 import Animated, { FadeOutUp } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
+import * as Clipboard from 'expo-clipboard';
 
 export type UrlSearchbarProps = {
     onThreadCreated: (threadId: string) => void,
@@ -73,7 +74,10 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
                 theme={{...DefaultTheme, colors: {...Colors, background: 'red'}}}
                 inputStyle={styles.backgroundColor}
                 traileringIcon={'clipboard-outline'}
-                onTraileringIconPress={_ => console.log('Clipboard icon pressed')}
+                onTraileringIconPress={async _ => {
+                    const text = await Clipboard.getStringAsync();
+                    setUrl(text);
+                }}
                 value={url}
                 id={id}
                 placeholder={placeholder}

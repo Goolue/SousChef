@@ -6,7 +6,7 @@ import { DefaultTheme, PaperProvider } from "react-native-paper";
 import { StyleSheet, Image, View } from "react-native";
 import Colors from "@/constants/Colors";
 import ResultsView from "@/components/ResultsView";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import Animated, { FadeOut } from "react-native-reanimated";
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
