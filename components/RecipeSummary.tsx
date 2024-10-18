@@ -65,9 +65,11 @@ const RecipeSummary: React.FC<RecipeSummaryProps> = ({ recipeInfo, itemNumberOfL
                             {recipeInfo.comments && recipeInfo.comments.length > 0 &&
                                 <View style={styles.item}>
                                     <List.Accordion title="Comments" id='comments'>
-                                        {recipeInfo.comments.map((comment, index) => (
-                                            <SummaryItem key={index} title={`${index + 1}. ${comment}`} />)
-                                        )}
+                                        <ScrollView style={{ maxHeight: 200 }}>
+                                            {recipeInfo.comments.map((comment, index) => (
+                                                <SummaryItem key={index} title={`${index + 1}. ${comment}`} />
+                                            ))}
+                                        </ScrollView>
                                     </List.Accordion>
                                 </View>}
                         </List.AccordionGroup>
