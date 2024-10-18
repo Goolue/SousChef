@@ -5,7 +5,7 @@ import OpenAI from 'openai';
 
 const client = OpenAiUtils.client;
 
-export async function cleanPageContent(pageContent: string): Promise<FullRecipeInfo> {
+export async function cleanPageContent(pageContent: string): Promise<FullRecipeInfo | null> {
     return measureDuration('cleanHtml', async () => {
 
         const systemPrompt = `You are an HTML and web design expert.
@@ -16,7 +16,7 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
         - title
         - intro
         - prepAndCookTime - an object with the fields workTime, totalTime, difficulty
-        - ingredients - an array of strings
+        - ingredients - an array of strings. Don't forget to include the quantity of each ingredient. For example: "250g of white cheese, 37% fat"
         - steps - an array of strings. These are the steps to make the recipe.
         - comments - an array of strings. These are comments from the author, such as "It is better to do it in a chill room". Not comments from users or reviews. Summarize them into points, no more then 10 points.
 
