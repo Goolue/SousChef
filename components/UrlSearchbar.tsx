@@ -1,6 +1,6 @@
 import getHtml from "@/hooks/htmlHandler";
 import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
-import { useImperativeHandle, useRef, useState } from "react";
+import { useImperativeHandle, useState } from "react";
 import { DefaultTheme, HelperText, Searchbar } from "react-native-paper";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
