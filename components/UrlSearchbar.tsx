@@ -1,11 +1,12 @@
 import getHtml from "@/hooks/htmlHandler";
 import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
-import { useState } from "react";
+import { useImperativeHandle, useRef, useState } from "react";
 import { DefaultTheme, HelperText, Searchbar } from "react-native-paper";
-import Animated, { FadeOutUp } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
 import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 import * as Clipboard from 'expo-clipboard';
+import React from "react";
 
 export type UrlSearchbarProps = {
     onThreadCreated: (threadId: string) => void,
@@ -17,14 +18,31 @@ export type UrlSearchbarProps = {
     placeholder?: string,
 };
 
-export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentReceived, onContentAnalyzed, onError,
+const UrlSearchbar = React.forwardRef<{ reset: () => void }, UrlSearchbarProps>(({
+    onSubmit,
+    onThreadCreated,
+    onContentReceived,
+    onContentAnalyzed,
+    onError,
     id = 'urlInput',
-    placeholder = 'Enter URL here' }: UrlSearchbarProps) {
+    placeholder = 'Enter URL here'
+}, ref: React.Ref<{ reset: () => void }>) => {
 
     const [visible, setVisible] = useState(true);
     const [url, setUrl] = useState('');
     const [urlInputLoading, setUrlInputLoading] = useState(false);
     const [errorText, setErrorText] = useState('');
+
+    const reset = async () => {
+        console.log('resetting searchbar');
+
+        setVisible(true);
+        setUrl('');
+        setErrorText('');
+        setUrlInputLoading(false);
+    };
+
+    useImperativeHandle(ref, () => ({ reset }));
 
     const onSubmitEditing = (
         onContentReceived: (content: FullRecipeInfo) => void,
@@ -65,7 +83,7 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
             });
     }
 
-    const pasteFromClipboard = async (_ : any) => {
+    const pasteFromClipboard = async (_: any) => {
         const text = await Clipboard.getStringAsync();
         setUrl(text);
     }
@@ -73,11 +91,12 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
     return visible && (
         <Animated.View
             exiting={FadeOutUp}
+            entering={FadeInDown}
             style={styles.searchbarView}
         >
             <Searchbar
                 style={styles.searchbar}
-                theme={{...DefaultTheme, colors: {...Colors, background: 'red'}}}
+                theme={{ ...DefaultTheme, colors: { ...Colors, background: 'red' } }}
                 inputStyle={styles.backgroundColor}
                 traileringIcon={'clipboard-outline'}
                 onTraileringIconPress={pasteFromClipboard}
@@ -86,14 +105,14 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
                 placeholder={placeholder}
                 onChangeText={newText => setUrl(newText)}
                 loading={urlInputLoading}
-                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}  
+                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}
             />
-            <HelperText type="error" visible={errorText !== ''}> 
+            <HelperText type="error" visible={errorText !== ''}>
                 {errorText}
             </HelperText>
         </Animated.View>
     );
-}
+});
 
 const styles = StyleSheet.create({
     searchbarView: {
@@ -110,3 +129,5 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surfaceVariant
     }
 });
+
+export default UrlSearchbar;

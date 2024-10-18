@@ -1,7 +1,7 @@
 import { Bubble, GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { useCallback, useImperativeHandle, useState } from "react";
 import React from "react";
-import { TextInput, Text, DefaultTheme, Button } from "react-native-paper";
+import { Button } from "react-native-paper";
 import { tts } from "@/hooks/audioHandler";
 import Colors from "@/constants/Colors";
 
