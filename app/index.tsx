@@ -6,7 +6,6 @@ import { DefaultTheme, PaperProvider } from "react-native-paper";
 import { StyleSheet, Image, View } from "react-native";
 import Colors from "@/constants/Colors";
 import ResultsView from "@/components/ResultsView";
-import Animated, { FadeOut } from "react-native-reanimated";
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
@@ -29,11 +28,7 @@ export default function Index() {
             id='urlInput'
             placeholder="Enter URL here"
           />
-          {!fullRecipeInfo &&
-            <Animated.View exiting={FadeOut}>
-              <Image source={require('../assets/images/robo.png')} style={styles.image} />
-            </Animated.View>
-          }
+          <Image source={require('../assets/images/robo.png')} style={styles.image} />
         </View>
 
         {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} threadId={threadId} />}
