@@ -32,6 +32,7 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
         onError: (err: any) => void,
         onSubmit?: () => void
     ): void => {
+        setErrorText('');
         setUrlInputLoading(true);
         if (onSubmit) {
             onSubmit();
@@ -52,8 +53,8 @@ export default function UrlSearchbar({ onSubmit, onThreadCreated, onContentRecei
                     .then(_ => {
                         onContentAnalyzed();
                         setUrlInputLoading(false);
-                        setVisible(false);
                     })
+                setVisible(false);
                 onContentReceived(fullRecipe);
                 return fullRecipe;
             })
