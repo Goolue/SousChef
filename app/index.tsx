@@ -3,9 +3,10 @@ import { FullRecipeInfo } from "@/hooks/recipeAnalyzer";
 import { useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DefaultTheme, PaperProvider } from "react-native-paper";
-import { StyleSheet, Image, View } from "react-native";
+import { StyleSheet } from "react-native";
 import Colors from "@/constants/Colors";
 import ResultsView from "@/components/ResultsView";
+import Chat from "@/components/Chat";
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
@@ -19,19 +20,16 @@ export default function Index() {
       }
     }}>
       <GestureHandlerRootView >
-        <View style={styles.wrappingView}>
-          <UrlSearchbar
-            onThreadCreated={threadId => setThreadId(threadId)}
-            onContentReceived={content => setFullRecipeInfo(content)}
-            onContentAnalyzed={() => console.log('Content analyzed')}
-            onError={err => console.error('Error:', err)}
-            id='urlInput'
-            placeholder="Enter URL here"
-          />
-          <Image source={require('../assets/images/robo.png')} style={styles.image} />
-        </View>
+        <UrlSearchbar
+          onThreadCreated={threadId => setThreadId(threadId)}
+          onContentReceived={content => setFullRecipeInfo(content)}
+          onContentAnalyzed={() => console.log('Content analyzed')}
+          onError={err => console.error('Error:', err)}
+          id='urlInput'
+          placeholder="Enter URL here"
+        />
 
-        {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} threadId={threadId} />}
+        {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} threadId={threadId}/>}
       </GestureHandlerRootView>
     </PaperProvider >
   );
@@ -56,16 +54,4 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 100,
   },
-  wrappingView: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    top: '30%',
-  },
-  image: {
-    height: 300,
-    width: 300,
-    justifyContent: "center",
-    alignItems: "center",
-  }
 });
