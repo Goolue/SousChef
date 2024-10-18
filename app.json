@@ -4,7 +4,7 @@
     "slug": "SousChef2",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/robo.jpg",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,14 +17,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/robo.jpg",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.goolue.SousChef"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/robo.jpg"
     },
     "plugins": [
       "expo-router"
@@ -32,7 +33,12 @@
     "experiments": {
       "typedRoutes": true
     },
-    "sdkVersion": "51.0.0"
+    "sdkVersion": "51.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "c81da5d5-cb39-4056-a764-d4b64b8f0b51"
+      }
+    }
   },
   "name": "souschef2"
 }
