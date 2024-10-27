@@ -50,61 +50,6 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
     });
 }
 
-export async function initThread(recipe: FullRecipeInfo): Promise<string> {
-    return measureDuration('initThread', async () => {
-
-        console.log('creating thread')
-        const recipeString = JSON.stringify(recipe);
-        const thread = await client.beta.threads.create({
-            messages: [
-                {
-                    role: 'user',
-                    content: `This is my receipt: ${recipeString}. Analyze it for me.`
-                }
-            ]
-        });
-
-        console.log(`created thread: ${thread.id}`)
-        return thread.id;
-    });
-}
-
-export async function askQuestion(question: string, threadId: string): Promise<string> {
-    return measureDuration('askQuestion', async () => {
-        console.log(`sending question message: ${question}`)
-        await client.beta.threads.messages.create(threadId, { role: "user", content: question });
-
-        console.log('running assistant')
-        let run = await client.beta.threads.runs.createAndPoll(
-            threadId, { assistant_id: OpenAiUtils.constants.assistantId }
-        );
-
-        return await waitForRun(run);
-    });
-}
-
-async function waitForRun(run: OpenAI.Beta.Threads.Runs.Run): Promise<string> {
-    return measureDuration('waitForRun', async () => {
-        console.log(`waiting for run ${run.id}`);
-        while (true) {
-            if (run.status === 'completed') {
-                const messages = await client.beta.threads.messages.list(
-                    run.thread_id
-                );
-                const textMessage = messages.data?.filter(message => message.content[0]?.type === 'text')[0];
-
-                const answer = (textMessage?.content[0] as TextContentBlock).text.value;
-
-                console.log(`run ${run.id} completed with answer: ${answer}`);
-                return answer;
-            } else {
-                console.log(`status: ${run.status}, error: ${run.last_error}`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-        }
-    });
-}
-
 export const initChatConnection = (fullRecipeInfo: FullRecipeInfo,
     onResponseTextReceived?: (response: string) => void,
     onResponseTextDone?: (text?: string) => void,

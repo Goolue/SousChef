@@ -1,5 +1,5 @@
 import getHtml from "@/hooks/htmlHandler";
-import { FullRecipeInfo, cleanPageContent, initThread } from "@/hooks/recipeAnalyzer";
+import { FullRecipeInfo, cleanPageContent } from "@/hooks/recipeAnalyzer";
 import { useImperativeHandle, useState } from "react";
 import { DefaultTheme, HelperText, Searchbar } from "react-native-paper";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
@@ -9,9 +9,7 @@ import * as Clipboard from 'expo-clipboard';
 import React from "react";
 
 export type UrlSearchbarProps = {
-    onThreadCreated: (threadId: string) => void,
     onContentReceived: (content: FullRecipeInfo) => void,
-    onContentAnalyzed: () => void,
     onError: (err: any) => void,
     onSubmit?: () => void,
     id?: string,
@@ -20,9 +18,7 @@ export type UrlSearchbarProps = {
 
 const UrlSearchbar = React.forwardRef<{ reset: () => void }, UrlSearchbarProps>(({
     onSubmit,
-    onThreadCreated,
     onContentReceived,
-    onContentAnalyzed,
     onError,
     id = 'urlInput',
     placeholder = 'Enter URL here'
@@ -46,7 +42,6 @@ const UrlSearchbar = React.forwardRef<{ reset: () => void }, UrlSearchbarProps>(
 
     const onSubmitEditing = (
         onContentReceived: (content: FullRecipeInfo) => void,
-        onContentAnalyzed: () => void,
         onError: (err: any) => void,
         onSubmit?: () => void
     ): void => {
@@ -66,12 +61,7 @@ const UrlSearchbar = React.forwardRef<{ reset: () => void }, UrlSearchbarProps>(
                 if (fullRecipe === null) {
                     return null;
                 }
-                initThread(fullRecipe)
-                    .then(threadId => onThreadCreated(threadId))
-                    .then(_ => {
-                        onContentAnalyzed();
-                        setUrlInputLoading(false);
-                    })
+                setUrlInputLoading(false);
                 setVisible(false);
                 onContentReceived(fullRecipe);
                 return fullRecipe;
@@ -105,7 +95,7 @@ const UrlSearchbar = React.forwardRef<{ reset: () => void }, UrlSearchbarProps>(
                 placeholder={placeholder}
                 onChangeText={newText => setUrl(newText)}
                 loading={urlInputLoading}
-                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onContentAnalyzed, onError, onSubmit)}
+                onSubmitEditing={_ => onSubmitEditing(onContentReceived, onError, onSubmit)}
             />
             <HelperText type="error" visible={errorText !== ''}>
                 {errorText}

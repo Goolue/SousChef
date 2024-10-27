@@ -95,7 +95,6 @@ class OpenAiRealtimeHandler {
                 console.log("WebSocket connection closed");
                 break;
             case "response.text.delta":
-                console.log(`Received DELTA: ${message.delta}`);
                 onResponseTextReceived?.(message.delta);
                 break;
             case "response.text.done":

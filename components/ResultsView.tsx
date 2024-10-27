@@ -1,6 +1,6 @@
-import Chat, { ChatMessage, ChatRefCallbacks } from "@/components/Chat";
+import Chat from "@/components/Chat";
 import RecipeSummary from "@/components/RecipeSummary";
-import { FullRecipeInfo, askQuestion } from "@/hooks/recipeAnalyzer";
+import { FullRecipeInfo } from "@/hooks/recipeAnalyzer";
 import { useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { FAB } from "react-native-paper";
@@ -11,27 +11,11 @@ import Colors from "@/constants/Colors";
 
 export type ResultsViewProps = {
     fullRecipeInfo: FullRecipeInfo,
-    threadId: string,
 }
 
-export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps) {
+export default function ResultsView({fullRecipeInfo}: ResultsViewProps) {
     const [playSound, setPlaySound] = useState(true);
     const [keepAwake, setKeepAwake] = useState(false);
-
-    const chatRef = useRef<ChatRefCallbacks | null>(null);
-
-    const ask = async (question: string) => {
-        const answer = await askQuestion(question, threadId);
-        const message: ChatMessage = {
-            text: answer,
-            user: {
-                _id: 1,
-                name: 'Chef'
-            }
-        };
-
-        chatRef.current?.sendMessage(message);
-    };
 
     const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -48,7 +32,7 @@ export default function ResultsView({fullRecipeInfo, threadId}: ResultsViewProps
                 enableContentPanningGesture={false} // Disable gestures inside the bottom sheet
             >
                 <BottomSheetScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                    <Chat playSound={playSound} disableComposer={false} ref={chatRef} onSend={msg => ask(msg)} fullRecipeInfo={fullRecipeInfo} />
+                    <Chat playSound={playSound} disableComposer={false} fullRecipeInfo={fullRecipeInfo} />
                  </BottomSheetScrollView>
             </BottomSheet>
 

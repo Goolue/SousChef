@@ -9,7 +9,6 @@ import { Alert, BackHandler } from "react-native";
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
-  const [threadId, setThreadId] = useState('');
 
   const searchbarRef = useRef<{ reset: () => void } | null>(null);
 
@@ -60,16 +59,14 @@ export default function Index() {
     }}>
       <GestureHandlerRootView >
         <UrlSearchbar
-          onThreadCreated={threadId => setThreadId(threadId)}
           onContentReceived={content => setFullRecipeInfo(content)}
-          onContentAnalyzed={() => console.log('Content analyzed')}
           onError={err => console.error('Error:', err)}
           id='urlInput'
           placeholder="Enter URL here"
           ref={searchbarRef}
         />
 
-        {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} threadId={threadId} />}
+        {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} />}
       </GestureHandlerRootView>
     </PaperProvider >
   );

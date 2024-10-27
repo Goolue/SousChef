@@ -1,13 +1,10 @@
 import { Bubble, GiftedChat, IMessage, User } from "react-native-gifted-chat";
-import { useCallback, useEffect, useImperativeHandle, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import React from "react";
 import { Button } from "react-native-paper";
 import { tts } from "@/hooks/audioHandler";
 import Colors from "@/constants/Colors";
-import OpenAiRealtimeHandler from "@/hooks/openAiRealtimeHandler";
 import { FullRecipeInfo, initChatConnection, sendChatMessage } from "@/hooks/recipeAnalyzer";
-import { add } from "cheerio/lib/api/traversing";
-import { text } from "cheerio/lib/api/manipulation";
 
 const user: User = {
     _id: 0,
@@ -21,33 +18,11 @@ export interface ChatMessage {
 
 export interface ChatProps {
     disableComposer: boolean,
-    onSend: (message: string) => void,
     playSound: boolean,
     fullRecipeInfo: FullRecipeInfo,
 }
 
-const toIMessage = (msg: ChatMessage): IMessage => {
-    return {
-        _id: Math.random().toString(),
-        text: msg.text,
-        createdAt: new Date(),
-        user: msg.user,
-        system: false,
-        sent: true,
-        received: true,
-    }
-};
-
-
-export type ChatRefCallbacks = {
-    sendMessage: (message: ChatMessage) => void;
-    startMessage: (text: string) => void;
-    addMessageDelta: (delta: string) => void;
-    finishMessage: () => void;
-};
-
-const Chat = React.forwardRef(({ disableComposer, onSend, playSound, fullRecipeInfo }: ChatProps,
-    ref: React.Ref<ChatRefCallbacks>) => {
+const Chat: React.FC<ChatProps> = ({ disableComposer, playSound, fullRecipeInfo }: ChatProps) => {
     const [messages, setMessages] = useState<IMessage[]>([])
     const [loading, setLoading] = useState(false)
 
@@ -58,20 +33,6 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound, fullRecipeI
             GiftedChat.append(previousMessages, messages),
         );
     }, [])
-
-    // deprecated
-    const addAnswer = (msg: ChatMessage) => {
-        setLoading(false);
-        appendMessage([toIMessage(msg)]);
-
-        if (playSound) {
-            console.log('Playing sound')
-            tts(msg.text);
-        }
-        else {
-            console.log('Not playing sound')
-        }
-    }
 
     const addQuestion = (messages: IMessage[]) => {
         appendMessage(messages);
@@ -163,15 +124,6 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound, fullRecipeI
         initChatConnection(fullRecipeInfo, onTextReceived, onTextEnded);
     }, []);
 
-    useImperativeHandle(ref, () => ({
-        sendMessage: addAnswer,
-        startMessage: onTextReceived,
-        addMessageDelta: addAnswerDelta,
-        finishMessage: onTextEnded,
-    }));
-
-
-
     const renderBubble = (props: any) => {
         return (
             <Bubble
@@ -206,15 +158,15 @@ const Chat = React.forwardRef(({ disableComposer, onSend, playSound, fullRecipeI
             // }}/>}
 
             // TODO test
-            renderSend={props => <Button onTouchEnd={() => {
+            renderSend={props =>
+                 <Button onTouchEnd={() => {
                 const { text, onSend } = props;
                 if (text && onSend) {
-                    console.log(`send: ${text}`)
                     onSend({ text: text, _id: 1 }, true)
                 }
             }}>Send</Button>}
         />
     )
-});
+};
 
 export default Chat;
