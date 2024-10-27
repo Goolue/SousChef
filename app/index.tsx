@@ -13,27 +13,33 @@ export default function Index() {
 
   const searchbarRef = useRef<{ reset: () => void } | null>(null);
 
+  const showBackAlert = () =>
+    Alert.alert(
+      "Hold on!",
+      "Are you sure you want to go back?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        {
+          text: "YES",
+          onPress: () => {
+            setFullRecipeInfo(null);
+            searchbarRef.current?.reset();
+          }
+        },
+      ]
+    );
+
   useEffect(() => {
     const backAction = () => {
       // Show a confirmation dialog
-      Alert.alert(
-        "Hold on!",
-        "Are you sure you want to go back?",
-        [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel"
-          },
-          {
-            text: "YES",
-            onPress: () => {
-              setFullRecipeInfo(null);
-              searchbarRef.current?.reset();
-            }
-          }
-        ]
-      );
+      if (!fullRecipeInfo) {
+        return false;
+      }
+      showBackAlert();
       return true;
     };
 
@@ -63,7 +69,7 @@ export default function Index() {
           ref={searchbarRef}
         />
 
-        {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} threadId={threadId}/>}
+        {fullRecipeInfo && <ResultsView fullRecipeInfo={fullRecipeInfo} threadId={threadId} />}
       </GestureHandlerRootView>
     </PaperProvider >
   );
