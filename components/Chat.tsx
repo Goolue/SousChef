@@ -2,7 +2,7 @@ import { Bubble, GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { useCallback, useEffect, useState } from "react";
 import React from "react";
 import { Button } from "react-native-paper";
-import { tts } from "@/hooks/audioHandler";
+import { onAudioReceived, tts } from "@/hooks/audioHandler";
 import Colors from "@/constants/Colors";
 import { FullRecipeInfo, initChatConnection, sendChatMessage } from "@/hooks/recipeAnalyzer";
 
@@ -109,19 +109,19 @@ const Chat: React.FC<ChatProps> = ({ disableComposer, playSound, fullRecipeInfo 
                 msg._id === updatedMessage._id ? updatedMessage : msg
             )
         );
-        if (playSound) {
-            console.log('Playing sound')
-            tts(currentMessage.text);
-        }
-        else {
-            console.log('Not playing sound')
-        }
+        // if (playSound) {
+        //     console.log('Playing sound')
+        //     tts(currentMessage.text);
+        // }
+        // else {
+        //     console.log('Not playing sound')
+        // }
 
         currentMessage = null;
     };
 
     useEffect(() => {
-        initChatConnection(fullRecipeInfo, onTextReceived, onTextEnded);
+        initChatConnection(fullRecipeInfo, onTextReceived, onTextEnded, onAudioReceived);
     }, []);
 
     const renderBubble = (props: any) => {

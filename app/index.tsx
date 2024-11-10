@@ -6,6 +6,8 @@ import { DefaultTheme, PaperProvider } from "react-native-paper";
 import Colors from "@/constants/Colors";
 import ResultsView from "@/components/ResultsView";
 import { Alert, BackHandler } from "react-native";
+import OpenAiRealtimeHandler from "@/hooks/openAiRealtimeHandler";
+import { onAudioReceived } from "@/hooks/audioHandler";
 
 export default function Index() {
   const [fullRecipeInfo, setFullRecipeInfo] = useState(null as FullRecipeInfo | null);
@@ -29,15 +31,33 @@ export default function Index() {
             searchbarRef.current?.reset();
           }
         },
+        {
+          text: "SOUNDDDD",
+          onPress: () => {
+            const realtimeHandler = new OpenAiRealtimeHandler({
+              conversationInitPrompts: {
+                  systemPrompt: 'I will ask you to say things and you will say them. Answer in 10 words. Always reply in audio',
+              },
+              onResponseTextReceived: (response: string) => {},
+              onResponseTextDone: (text?: string) => {},
+              onAudioReceived: onAudioReceived,
+              onAudioDone: () => console.log('audio done'),
+          });
+          realtimeHandler.initWebsocket();
+          setTimeout(() => {
+            realtimeHandler.sendMessage('Say hello');
+          }, 3000);
+          }
+        },
       ]
     );
 
   useEffect(() => {
     const backAction = () => {
       // Show a confirmation dialog
-      if (!fullRecipeInfo) {
-        return false;
-      }
+      // if (!fullRecipeInfo) {
+      //   return false;
+      // }
       showBackAlert();
       return true;
     };

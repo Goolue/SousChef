@@ -53,6 +53,8 @@ export async function cleanPageContent(pageContent: string): Promise<FullRecipeI
 export const initChatConnection = (fullRecipeInfo: FullRecipeInfo,
     onResponseTextReceived?: (response: string) => void,
     onResponseTextDone?: (text?: string) => void,
+    onAudioReceived?: (audio: string) => void,
+    onAudioDone?: () => void,
 ) => {
 
     const recipeString = JSON.stringify(fullRecipeInfo);
@@ -80,6 +82,8 @@ export const initChatConnection = (fullRecipeInfo: FullRecipeInfo,
         },
         onResponseTextReceived,
         onResponseTextDone,
+        onAudioReceived,
+        onAudioDone,
     });
     realtimeHandler.initWebsocket();
 
@@ -95,10 +99,24 @@ export const closeChatConnection = () => {
     console.log('chat connection closed')
 }
 
-export const sendChatMessage = (message: string) => {
+export const sendChatMessage = async (message: string) => {
     console.log(`send chat message: ${message}`)
     if (realtimeHandler) {
         realtimeHandler.sendMessage(message);
+        // const response = await client.chat.completions.create({
+        //     stream: false,
+        //     model: OpenAiUtils.models.completion['gpt-4o'],
+        //     n: 1,
+        //     temperature: 1,
+        //     messages: [
+        //         { 'role': 'user', content: message }
+        //     ]
+        // });
+
+        // const audioContent = response.choices[0].message.content as string;
+        // if (audioContent) {
+        //     onAudioReceived(audioContent);
+        // }
     }
     else {
         console.error('realtimeHandler is null')

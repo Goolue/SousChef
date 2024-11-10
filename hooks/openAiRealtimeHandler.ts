@@ -13,10 +13,13 @@ export type InitWebsocketParams = {
     }
     onResponseTextReceived?: (response: string) => void;
     onResponseTextDone?: (text?: string) => void;
+    onAudioReceived?: (audio: string) => void;
+    onAudioDone?: () => void;
 }
 
 class OpenAiRealtimeHandler {
     private ws: WebSocket | null = null;
+    private useAudio: boolean = true;
 
     constructor(private initParams: InitWebsocketParams) {}
 
@@ -68,10 +71,13 @@ class OpenAiRealtimeHandler {
     }
 
     private createResponse() {
+        const modalities = this.useAudio ? ["text", "audio"] : ["text"];
+
+        console.log(`Creating response with modalities: ${modalities}`);
         const createResponseEvent = {
             type: "response.create",
             response: {
-                modalities: ["text"],
+                modalities: modalities,
                 instructions: "Please assist the user.",
             }
         };
@@ -100,6 +106,18 @@ class OpenAiRealtimeHandler {
             case "response.text.done":
                 console.log(`Received response text done: ${message.text}`);
                 onResponseTextDone?.(message.text);
+                break;
+            case "response.audio.delta":
+                const { onAudioReceived } = this.initParams;
+                // console.log(`Received audio delta: ${message.delta}`);
+                onAudioReceived?.(message.delta);
+                break;
+            case "response.audio_transcript.delta":
+                console.log(`Received audio transcript delta: ${message.delta}`);
+                onResponseTextReceived?.(message.delta);
+                break;
+            case "response.audio_transcript.done":
+                console.log(`Received audio transcript done: ${message.transcript}`);
                 break;
         }
     }
@@ -164,6 +182,11 @@ class OpenAiRealtimeHandler {
 
         console.log("Closing websocket connection");
         this.ws?.close();
+    }
+
+    public toggleAudio() {
+        this.useAudio = !this.useAudio;
+        console.log(`Toggled audio to: ${this.useAudio}`);
     }
 }
 
